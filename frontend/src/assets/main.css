@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans antialiased;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+}
+
+@layer components {
+  .post-card {
+    @apply bg-white rounded-2xl p-5 shadow-sm border border-warm-100 transition-all duration-200 hover:shadow-md;
+  }
+
+  .btn-primary {
+    @apply bg-warm-500 text-white px-6 py-3 rounded-full font-medium transition-all duration-200 hover:bg-warm-600 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .tag-chip {
+    @apply inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-warm-50 text-warm-600 border border-warm-200 transition-colors hover:bg-warm-100;
+  }
+
+  .tag-chip.active {
+    @apply bg-warm-500 text-white border-warm-500;
+  }
+}
+
+/* 夜间模式 */
+.dark body {
+  @apply bg-dusk-900 text-warm-50;
+}
+
+.dark .post-card {
+  @apply bg-dusk-800 border-dusk-700;
+}
+
+.dark .tag-chip {
+  @apply bg-dusk-700 text-warm-300 border-dusk-600;
+}

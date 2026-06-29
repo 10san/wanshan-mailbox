@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: wanshan-mailbox
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:wanshan_mailbox}?useUnicode=true&characterEncoding=utf8mb4&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 3000ms
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: status
+      logic-delete-value: 2
+      logic-not-delete-value: 1
+
+# MinIO 配置
+minio:
+  endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+  access-key: ${MINIO_ACCESS_KEY:minioadmin}
+  secret-key: ${MINIO_SECRET_KEY:minioadmin}
+  bucket: ${MINIO_BUCKET:wanshan-images}
+
+# JWT 配置
+jwt:
+  secret: ${JWT_SECRET:wanshan-mailbox-jwt-secret-key-change-in-production}
+  access-token-expire: 7200
+  refresh-token-expire: 604800
+
+# 应用配置
+app:
+  sensitive-words-refresh-interval: 300000  # 5分钟刷新敏感词库
+  post-rate-limit:
+    max-requests: 3      # 每分钟最多发帖数
+    window-seconds: 60
+  comment-rate-limit:
+    max-requests: 10     # 每分钟最多评论数
+    window-seconds: 60
+
+server:
+  port: ${SERVER_PORT:8080}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
