@@ -1,7 +1,6 @@
 package com.wanshan.service;
 
 import io.minio.*;
-import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -50,17 +48,7 @@ public class FileStorageService {
             );
         }
 
-        // 生成预签名 URL（7 天有效）
-        String url = minioClient.getPresignedObjectUrl(
-                GetPresignedObjectUrlArgs.builder()
-                        .bucket(bucket)
-                        .object(objectName)
-                        .method(Method.GET)
-                        .expiry(7, TimeUnit.DAYS)
-                        .build()
-        );
-
-        log.info("Image uploaded: {} -> {}", originalName, objectName);
-        return url;
+        // 返回相对路径，通过后端代理访问 MinIO
+        return "/api/v1/images/" + objectName;
     }
 }
