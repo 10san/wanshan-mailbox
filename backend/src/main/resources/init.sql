@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS admins (
 
 -- 初始化默认管理员 (密码: admin123)
 INSERT IGNORE INTO admins (username, password, role)
-VALUES ('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', 'admin');
+VALUES ('admin', '$2b$12$QyfQBEXkUwYPJHHCPVJCOuNVlXerVUrrSbuhKklP1L/R36Xd6DtTe', 'admin');
 
 -- 敏感词表
 CREATE TABLE IF NOT EXISTS sensitive_words (
