@@ -24,6 +24,8 @@ public class Comment {
 
     private String ipHash;
 
+    private String cookieId;
+
     /** 1:正常 2:用户删除 3:管理员删除 */
     private Integer status;
 

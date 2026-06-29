@@ -25,14 +25,14 @@ public class SensitiveWordController {
     @PostMapping
     public Result<SensitiveWord> add(@RequestBody SensitiveWord word) {
         sensitiveWordMapper.insert(word);
-        sensitiveWordFilter.refresh(); // 实时生效
+        sensitiveWordFilter.refreshFromDb(); // 实时生效
         return Result.success(word);
     }
 
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         sensitiveWordMapper.deleteById(id);
-        sensitiveWordFilter.refresh();
+        sensitiveWordFilter.refreshFromDb();
         return Result.success();
     }
 }

@@ -4,6 +4,8 @@ import com.wanshan.mapper.SensitiveWordMapper;
 import com.wanshan.model.entity.SensitiveWord;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -34,34 +36,62 @@ public class SensitiveWordFilter {
         this.sensitiveWordMapper = sensitiveWordMapper;
     }
 
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
     public void init() {
-        refresh();
+        // 先加载代码内嵌基础词库（避免数据库编码问题）
+        loadBuiltinWords();
+        // 再从数据库加载
+        refreshFromDb();
     }
 
     /**
-     * 从数据库刷新词库
+     * 代码内嵌基础敏感词库
      */
-    public void refresh() {
+    private void loadBuiltinWords() {
+        String[] builtin = {
+            "赌博", "彩票", "六合彩", "色情", "裸聊", "约炮",
+            "毒品", "冰毒", "大麻", "枪支", "炸药",
+            "广告", "加微信", "加QQ", "微信号", "QQ号",
+            "兼职", "刷单", "返利", "代购", "微商", "代理"
+        };
+        lock.writeLock().lock();
+        try {
+            for (String word : builtin) {
+                insertToTrie(word.toLowerCase());
+            }
+        } finally {
+            lock.writeLock().unlock();
+        }
+        log.info("Builtin sensitive words loaded: {} words", builtin.length);
+    }
+
+    /**
+     * 从数据库刷新词库（追加到已有词库）
+     */
+    public void refreshFromDb() {
         List<SensitiveWord> words = sensitiveWordMapper.selectList(null);
         lock.writeLock().lock();
         try {
             root = new TrieNode();
-            List<Pattern> patterns = new ArrayList<>();
+            regexPatterns = new ArrayList<>();
+            // 先加载内置词
+            String[] builtin = {
+                "赌博", "彩票", "六合彩", "色情", "裸聊", "约炮",
+                "毒品", "冰毒", "大麻", "枪支", "炸药",
+                "广告", "加微信", "加QQ", "微信号", "QQ号",
+                "兼职", "刷单", "返利", "代购", "微商", "代理"
+            };
+            for (String w : builtin) insertToTrie(w.toLowerCase());
+            // 追加数据库词
             for (SensitiveWord sw : words) {
                 if (sw.getMatchType() == 2) {
-                    try {
-                        patterns.add(Pattern.compile(sw.getWord()));
-                    } catch (Exception e) {
-                        log.warn("Invalid regex pattern: {}", sw.getWord());
-                    }
+                    try { regexPatterns.add(Pattern.compile(sw.getWord())); }
+                    catch (Exception e) { log.warn("Invalid regex: {}", sw.getWord()); }
                 } else {
                     insertToTrie(sw.getWord().toLowerCase());
                 }
             }
-            this.regexPatterns = patterns;
-            log.info("Sensitive word library refreshed: {} exact + {} regex patterns",
-                    countTrieWords(), patterns.size());
+            log.info("Sensitive words: {} exact + {} regex", countTrieWords(), regexPatterns.size());
         } finally {
             lock.writeLock().unlock();
         }
@@ -120,6 +150,22 @@ public class SensitiveWordFilter {
             count += countWords(child);
         }
         return count;
+    }
+
+    private List<String> getSampleWords(int limit) {
+        List<String> samples = new ArrayList<>();
+        collectWords(root, new StringBuilder(), samples, limit);
+        return samples;
+    }
+
+    private void collectWords(TrieNode node, StringBuilder prefix, List<String> samples, int limit) {
+        if (samples.size() >= limit) return;
+        if (node.isEnd) samples.add(prefix.toString());
+        for (var entry : node.children.entrySet()) {
+            prefix.append(entry.getKey());
+            collectWords(entry.getValue(), prefix, samples, limit);
+            prefix.deleteCharAt(prefix.length() - 1);
+        }
     }
 
     static class TrieNode {

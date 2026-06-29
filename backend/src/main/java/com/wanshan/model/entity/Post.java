@@ -30,6 +30,9 @@ public class Post {
     /** 发帖 IP 哈希（SHA-256） */
     private String ipHash;
 
+    /** 匿名用户 Cookie 标识 */
+    private String cookieId;
+
     /** 1:正常 2:用户删除 3:管理员删除 */
     private Integer status;
 
