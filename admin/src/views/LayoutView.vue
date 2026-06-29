@@ -7,6 +7,7 @@
         <router-link to="/posts" class="block px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">📝 内容管理</router-link>
         <router-link to="/reports" class="block px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">🚨 举报处理</router-link>
         <router-link to="/sensitive-words" class="block px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">🔒 敏感词</router-link>
+        <router-link to="/ip-blocks" class="block px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">🚫 IP 封禁</router-link>
       </nav>
       <button @click="logout" class="mt-4 px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg transition-colors">退出登录</button>
     </aside>

@@ -10,6 +10,7 @@ const routes = [
       { path: 'posts', name: 'Posts', component: () => import('@/views/PostManageView.vue') },
       { path: 'reports', name: 'Reports', component: () => import('@/views/ReportManageView.vue') },
       { path: 'sensitive-words', name: 'SensitiveWords', component: () => import('@/views/SensitiveWordView.vue') },
+      { path: 'ip-blocks', name: 'IpBlocks', component: () => import('@/views/IpBlockView.vue') },
     ]
   }
 ]
