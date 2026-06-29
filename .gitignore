@@ -1,0 +1,33 @@
+# Java
+target/
+*.class
+*.jar
+*.war
+!.mvn/wrapper/maven-wrapper.jar
+
+# Node
+node_modules/
+dist/
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-data/
+
+# Logs
+*.log
+logs/
+
+# MinIO data
+minio-data/
