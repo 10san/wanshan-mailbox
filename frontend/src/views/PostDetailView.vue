@@ -43,7 +43,7 @@
         <div class="flex items-center justify-between text-sm text-dusk-400 pt-4 border-t border-warm-100">
           <span>{{ formatTime(post.createdAt) }}</span>
           <div class="flex gap-3">
-            <button @click="showDelete = true" class="hover:text-red-500 transition-colors">删除</button>
+            <button @click="openDelete" class="hover:text-red-500 transition-colors">删除</button>
             <button @click="showReport = true" class="hover:text-red-500 transition-colors">举报</button>
           </div>
         </div>
@@ -57,7 +57,7 @@
             class="w-full px-4 py-2 rounded-full border border-warm-200 focus:outline-none focus:border-warm-400 text-sm mb-2" />
           <p v-if="deleteError" class="text-red-500 text-xs mb-2">{{ deleteError }}</p>
           <div class="flex gap-2 mt-3">
-            <button @click="showDelete = false" class="flex-1 py-2 rounded-full border border-warm-200 text-sm">取消</button>
+            <button @click="showDelete = false" class="flex-1 py-2 rounded-full border border-warm-200 text-dusk-600 text-sm hover:bg-warm-50">取消</button>
             <button @click="doDelete" class="flex-1 py-2 rounded-full bg-red-500 text-white text-sm">确认删除</button>
           </div>
         </div>
@@ -73,7 +73,7 @@
                 selectedReason === r ? 'border-red-400 bg-red-50 text-red-600' : 'border-warm-200 text-dusk-600']">{{ r }}</button>
           </div>
           <div class="flex gap-2">
-            <button @click="showReport = false" class="flex-1 py-2 rounded-full border border-warm-200 text-sm">取消</button>
+            <button @click="showReport = false" class="flex-1 py-2 rounded-full border border-warm-200 text-dusk-600 text-sm hover:bg-warm-50">取消</button>
             <button @click="doReport" :disabled="!selectedReason"
               class="flex-1 py-2 rounded-full bg-red-500 text-white text-sm disabled:opacity-50">提交举报</button>
           </div>
@@ -189,13 +189,28 @@ const submitComment = async () => {
   } finally { commentSubmitting.value = false }
 }
 
+const openDelete = () => {
+  deletePwd.value = ''
+  deleteError.value = ''
+  showDelete.value = true
+}
+
 const doDelete = async () => {
   deleteError.value = ''
   try {
-    await deletePost(route.params.id, deletePwd.value)
-    notFound.value = true; post.value = null; showDelete.value = false
+    const res = await deletePost(route.params.id, deletePwd.value)
+    // 检查返回结果
+    const result = res.data || res
+    if (result.code === 200 || result.message === 'success' || !result.code) {
+      showDelete.value = false
+      deletePwd.value = ''
+      notFound.value = true
+      post.value = null
+    } else {
+      deleteError.value = result.message || '密码错误'
+    }
   } catch (e) {
-    deleteError.value = e?.response?.data?.message || '密码错误'
+    deleteError.value = e?.response?.data?.message || '密码错误或帖子未设置删除密码'
   }
 }
 
