@@ -25,6 +25,7 @@
           <span class="text-sm text-dusk-500">{{ nickname }}</span>
         </div>
         <p class="text-dusk-700 leading-relaxed whitespace-pre-wrap mb-4">{{ post.content }}</p>
+        <img v-if="post.imageUrl" :src="post.imageUrl" class="w-full rounded-2xl mb-4 max-h-80 object-cover" loading="lazy" />
         <div v-if="post.tag" class="mb-4"><span class="tag-chip text-xs">{{ post.tag }}</span></div>
 
         <div class="flex items-center gap-6 text-dusk-400 text-sm mb-4">

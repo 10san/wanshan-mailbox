@@ -62,6 +62,7 @@ public class PostController {
                     content.trim(),
                     body.get("tag"),
                     body.get("deletePassword"),
+                    body.get("imageUrl"),
                     request
             );
             return Result.success(post);

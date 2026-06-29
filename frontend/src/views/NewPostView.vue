@@ -18,6 +18,9 @@
         <span v-if="content.length > 1900" class="text-red-400">即将达到上限</span>
       </div>
 
+      <!-- 图片上传 -->
+      <ImageUploader :imageUrl="imageUrl" @update:imageUrl="imageUrl = $event" />
+
       <div class="mb-6">
         <h3 class="text-sm font-medium text-dusk-600 mb-3">选择情绪标签（可选）</h3>
         <div class="flex flex-wrap gap-2">
@@ -42,11 +45,13 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { createPost } from '@/api/posts'
+import ImageUploader from '@/components/ImageUploader.vue'
 
 const router = useRouter()
 const content = ref('')
 const selectedTag = ref('')
 const deletePassword = ref('')
+const imageUrl = ref('')
 const submitting = ref(false)
 const errorMsg = ref('')
 
@@ -63,6 +68,7 @@ const submit = async () => {
   try {
     const body = { content: content.value.trim() }
     if (selectedTag.value) body.tag = selectedTag.value
+    if (imageUrl.value) body.imageUrl = imageUrl.value
     if (deletePassword.value) body.deletePassword = deletePassword.value
     const res = await createPost(body)
     const data = res.data || res

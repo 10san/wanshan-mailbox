@@ -33,7 +33,7 @@ public class PostService {
     /**
      * 创建帖子
      */
-    public Post createPost(String content, String tag, String deletePassword, HttpServletRequest request) {
+    public Post createPost(String content, String tag, String deletePassword, String imageUrl, HttpServletRequest request) {
         // 敏感词检测
         if (sensitiveWordFilter.containsSensitive(content)) {
             throw new IllegalArgumentException("内容包含不当信息，请修改后重新发布");
@@ -46,6 +46,7 @@ public class PostService {
         Post post = Post.builder()
                 .content(content)
                 .tag(tag)
+                .imageUrl(imageUrl)
                 .deleteHash(deletePassword != null && !deletePassword.isEmpty()
                         ? passwordEncoder.encode(deletePassword) : null)
                 .ipHash(ipHash)

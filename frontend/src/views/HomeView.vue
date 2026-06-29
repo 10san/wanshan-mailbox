@@ -19,6 +19,10 @@
           {{ tag.label }}
         </button>
       </div>
+      <div class="flex items-center gap-2 px-1">
+        <button @click="sortBy = 'latest'; fetchPosts(true)" :class="['text-xs px-2 py-1 rounded-full transition-colors', sortBy === 'latest' ? 'bg-warm-100 text-warm-600' : 'text-dusk-400']">最新</button>
+        <button @click="sortBy = 'hot'; fetchPosts(true)" :class="['text-xs px-2 py-1 rounded-full transition-colors', sortBy === 'hot' ? 'bg-warm-100 text-warm-600' : 'text-dusk-400']">最热</button>
+      </div>
     </nav>
 
     <main class="flex-1 max-w-3xl mx-auto px-4 py-6 w-full">
@@ -81,6 +85,7 @@ const posts = ref([])
 const loading = ref(true)
 const error = ref('')
 const activeTag = ref('all')
+const sortBy = ref('latest')
 const page = ref(1)
 const hasMore = ref(true)
 const isDark = ref(false)
@@ -115,7 +120,7 @@ const fetchPosts = async (reset = false) => {
   if (reset) { page.value = 1; posts.value = [] }
   loading.value = true; error.value = ''
   try {
-    const params = { page: page.value, size: 20 }
+    const params = { page: page.value, size: 20, sort: sortBy.value }
     if (activeTag.value !== 'all') params.tag = activeTag.value
     const res = await getPosts(params)
     const data = res.data || res
