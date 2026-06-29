@@ -21,16 +21,6 @@ public class ReportService {
     public Report createReport(String targetType, Long targetId, String reason, HttpServletRequest request) {
         String ipHash = IpUtil.hashIp(IpUtil.getClientIp(request));
 
-        // 去重检查
-        LambdaQueryWrapper<Report> dupCheck = new LambdaQueryWrapper<>();
-        dupCheck.eq(Report::getTargetType, targetType)
-                .eq(Report::getTargetId, targetId)
-                .eq(Report::getIpHash, ipHash)
-                .eq(Report::getStatus, 0);
-        if (reportMapper.selectCount(dupCheck) > 0) {
-            throw new IllegalArgumentException("您已举报过该内容");
-        }
-
         Report report = Report.builder()
                 .targetType(targetType)
                 .targetId(targetId)

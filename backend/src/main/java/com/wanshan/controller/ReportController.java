@@ -1,8 +1,11 @@
 package com.wanshan.controller;
 
+import com.wanshan.common.IpUtil;
 import com.wanshan.common.Result;
+import com.wanshan.mapper.ReportMapper;
 import com.wanshan.model.entity.Report;
 import com.wanshan.service.ReportService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +18,7 @@ import java.util.Map;
 public class ReportController {
 
     private final ReportService reportService;
+    private final ReportMapper reportMapper;
 
     /**
      * 提交举报
@@ -31,6 +35,18 @@ public class ReportController {
             }
             if (reason == null || reason.isEmpty()) {
                 return Result.error("请选择举报理由");
+            }
+
+            // Controller 层去重检查
+            String ipHash = IpUtil.hashIp(IpUtil.getClientIp(request));
+            long existing = reportMapper.selectCount(
+                    new LambdaQueryWrapper<Report>()
+                            .eq(Report::getTargetType, targetType)
+                            .eq(Report::getTargetId, targetId)
+                            .eq(Report::getIpHash, ipHash)
+                            .eq(Report::getStatus, 0));
+            if (existing > 0) {
+                return Result.error("您已举报过该内容");
             }
 
             Report report = reportService.createReport(targetType, targetId, reason, request);

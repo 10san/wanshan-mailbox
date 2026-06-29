@@ -31,9 +31,6 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
-      logic-delete-field: status
-      logic-delete-value: 2
-      logic-not-delete-value: 1
 
 # MinIO 配置
 minio:
