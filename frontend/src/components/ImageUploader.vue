@@ -12,7 +12,7 @@
       <div class="h-full bg-warm-500 rounded-full animate-pulse" style="width: 100%"></div>
     </div>
     <p v-if="error" class="text-red-500 text-xs mt-1">{{ error }}</p>
-    <input ref="fileInput" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" @change="handleFile" />
+    <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="handleFile" />
   </div>
 </template>
 
@@ -35,7 +35,9 @@ const handleFile = async (e) => {
   const file = e.target.files?.[0]
   if (!file) return
   if (file.size > 5 * 1024 * 1024) { error.value = '图片不能超过 5MB'; return }
-  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) { error.value = '仅支持 JPG/PNG/WebP'; return }
+  // 接受所有图片格式（包括 HEIC），后续 canvas 统一转 JPEG
+  const isImage = !file.type || file.type.startsWith('image/')
+  if (!isImage) { error.value = '仅支持图片格式'; return }
 
   // 前端压缩
   const compressed = await compressImage(file)
@@ -43,10 +45,9 @@ const handleFile = async (e) => {
   uploading.value = true; error.value = ''
   try {
     const formData = new FormData()
-    formData.append('file', compressed, file.name)
-    const res = await axios.post('/api/v1/upload/image', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
+    formData.append('file', compressed, compressed.name)
+    // 不要手动设置 Content-Type，让浏览器自动带 boundary（iOS 兼容）
+    const res = await axios.post('/api/v1/upload/image', formData)
     const data = res.data?.data || res.data
     emit('update:imageUrl', data.url)
   } catch (e) {
@@ -69,7 +70,11 @@ const compressImage = (file) => {
       canvas.width = w; canvas.height = h
       const ctx = canvas.getContext('2d')
       ctx.drawImage(img, 0, 0, w, h)
-      canvas.toBlob((blob) => resolve(new File([blob], file.name, { type: 'image/jpeg' })), 'image/jpeg', 0.8)
+      // 统一输出 JPEG，文件名改为 .jpg（避免 HEIC 扩展名问题）
+      const baseName = (file.name || 'upload').replace(/\.[^.]+$/, '')
+      canvas.toBlob((blob) => {
+        resolve(new File([blob], baseName + '.jpg', { type: 'image/jpeg' }))
+      }, 'image/jpeg', 0.8)
     }
     img.src = URL.createObjectURL(file)
   })

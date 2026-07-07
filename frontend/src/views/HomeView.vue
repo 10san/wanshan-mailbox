@@ -4,6 +4,7 @@
       <div class="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
         <h1 class="text-xl font-serif font-semibold text-dusk-800">🌙 晚山信箱</h1>
         <div class="flex items-center gap-2">
+          <router-link to="/feedback" class="p-2 text-dusk-500 hover:text-dusk-700 text-sm" title="意见反馈">💬</router-link>
           <router-link to="/search" class="p-2 text-dusk-500 hover:text-dusk-700 text-lg" title="搜索">🔍</router-link>
           <button class="p-2 text-dusk-500 hover:text-dusk-700 text-lg" @click="toggleDark" :title="isDark ? '日间模式' : '夜间模式'">
             {{ isDark ? '☀️' : '🌙' }}
@@ -11,6 +12,59 @@
         </div>
       </div>
     </header>
+
+    <!-- Hero 引导区：首次访问展示 -->
+    <transition name="hero-fade">
+      <section v-if="showHero" class="hero-section relative overflow-hidden">
+        <!-- 背景装饰 -->
+        <div class="absolute inset-0 pointer-events-none">
+          <div class="hero-bg-circle hero-bg-circle-1"></div>
+          <div class="hero-bg-circle hero-bg-circle-2"></div>
+          <div class="hero-bg-circle hero-bg-circle-3"></div>
+        </div>
+        <div class="relative max-w-3xl mx-auto px-4 py-8 md:py-12 text-center">
+          <div class="hero-content-anim">
+            <div class="text-4xl md:text-5xl mb-4 hero-icon-anim">🌙</div>
+            <h2 class="text-2xl md:text-3xl font-serif font-bold text-dusk-800 mb-3">把心事留在晚山</h2>
+            <p class="text-dusk-500 text-sm md:text-base leading-relaxed max-w-md mx-auto mb-6">
+              这里没有人知道你是谁<br class="md:hidden">
+              只有山风会替你保守秘密<br>
+              每一封信都是一颗星星<br class="md:hidden">
+              在黑夜里安静地发光
+            </p>
+            <div class="flex items-center justify-center gap-4 mb-6">
+              <div class="flex items-center gap-1.5 text-xs text-dusk-400">
+                <span>🔒</span><span>完全匿名</span>
+              </div>
+              <div class="w-px h-3 bg-warm-200"></div>
+              <div class="flex items-center gap-1.5 text-xs text-dusk-400">
+                <span>📝</span><span>无需注册</span>
+              </div>
+              <div class="w-px h-3 bg-warm-200"></div>
+              <div class="flex items-center gap-1.5 text-xs text-dusk-400">
+                <span>💝</span><span>温暖回应</span>
+              </div>
+            </div>
+            <router-link to="/new" class="hero-cta inline-block no-underline">
+              写下你的第一封信 ✍️
+            </router-link>
+            <p class="text-xs text-dusk-400 mt-4 cursor-pointer hover:text-dusk-500 transition-colors" @click="dismissHero">
+              向下滑动看看大家的故事 ↓
+            </p>
+          </div>
+        </div>
+      </section>
+    </transition>
+
+    <!-- 收起后的紧凑引导条 -->
+    <transition name="hero-fade">
+      <div v-if="!showHero && showCompactBar" class="compact-hero-bar">
+        <div class="max-w-3xl mx-auto px-4 h-10 flex items-center justify-between">
+          <p class="text-sm text-dusk-600 font-serif">🌙 把心事留在晚山，没有人知道你是谁</p>
+          <button @click="dismissCompactBar" class="text-dusk-400 hover:text-dusk-600 text-sm">✕</button>
+        </div>
+      </div>
+    </transition>
 
     <nav class="sticky top-14 z-10 bg-white/80 backdrop-blur-md border-b border-warm-100">
       <div class="max-w-3xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto scrollbar-hide">
@@ -78,7 +132,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { getPosts } from '@/api/posts'
 
 const posts = ref([])
@@ -89,6 +143,55 @@ const sortBy = ref('latest')
 const page = ref(1)
 const hasMore = ref(true)
 const isDark = ref(false)
+
+// ====== Hero 引导状态 ======
+const FIRST_VISIT_KEY = 'wanshan_visited'
+const COMPACT_DISMISS_KEY = 'wanshan_compact_dismissed'
+const showHero = ref(false)
+const showCompactBar = ref(false)
+let scrollHandler = null
+
+const dismissHero = () => {
+  showHero.value = false
+  showCompactBar.value = true
+  localStorage.setItem(FIRST_VISIT_KEY, '1')
+}
+
+const dismissCompactBar = () => {
+  showCompactBar.value = false
+  localStorage.setItem(COMPACT_DISMISS_KEY, '1')
+}
+
+onMounted(() => {
+  const hasVisited = localStorage.getItem(FIRST_VISIT_KEY)
+  const compactDismissed = localStorage.getItem(COMPACT_DISMISS_KEY)
+
+  if (!hasVisited) {
+    showHero.value = true
+    showCompactBar.value = false
+  } else if (!compactDismissed) {
+    showHero.value = false
+    showCompactBar.value = true
+  }
+
+  // 监听滚动：下滑超过 Hero 区域后自动收起
+  scrollHandler = () => {
+    if (showHero.value && window.scrollY > 200) {
+      showHero.value = false
+      showCompactBar.value = true
+      localStorage.setItem(FIRST_VISIT_KEY, '1')
+    }
+  }
+  window.addEventListener('scroll', scrollHandler, { passive: true })
+
+  const hour = new Date().getHours()
+  if (hour >= 18 || hour < 6) { isDark.value = true; document.documentElement.classList.add('dark') }
+  fetchPosts(true)
+})
+
+onUnmounted(() => {
+  if (scrollHandler) window.removeEventListener('scroll', scrollHandler)
+})
 
 const tags = [
   { label: '全部', value: 'all' },{ label: '🌙 深夜emo', value: '深夜emo' },
@@ -144,10 +247,4 @@ const toggleDark = () => {
   isDark.value = !isDark.value
   document.documentElement.classList.toggle('dark', isDark.value)
 }
-
-onMounted(() => {
-  const hour = new Date().getHours()
-  if (hour >= 18 || hour < 6) { isDark.value = true; document.documentElement.classList.add('dark') }
-  fetchPosts(true)
-})
 </script>

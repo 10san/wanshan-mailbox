@@ -54,6 +54,7 @@
         <div class="bg-white rounded-2xl p-6 w-80 shadow-xl">
           <h3 class="font-medium text-dusk-800 mb-3">输入删除密码</h3>
           <input v-model="deletePwd" type="password" placeholder="发帖时设置的密码"
+            autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
             class="w-full px-4 py-2 rounded-full border border-warm-200 focus:outline-none focus:border-warm-400 text-sm mb-2" />
           <p v-if="deleteError" class="text-red-500 text-xs mb-2">{{ deleteError }}</p>
           <div class="flex gap-2 mt-3">

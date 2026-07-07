@@ -32,6 +32,7 @@
       <div class="mb-6">
         <h3 class="text-sm font-medium text-dusk-600 mb-3">设置删除密码（可选）</h3>
         <input v-model="deletePassword" type="password" placeholder="设置后凭密码可删除，不设则只能管理员删除"
+          autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
           class="w-full px-4 py-3 rounded-full border border-warm-200 focus:outline-none focus:border-warm-400 text-sm bg-white" />
         <p class="text-xs text-dusk-400 mt-1 ml-1">不设置密码则只能由管理员删除</p>
       </div>
@@ -72,7 +73,8 @@ const submit = async () => {
     if (deletePassword.value) body.deletePassword = deletePassword.value
     const res = await createPost(body)
     const data = res.data || res
-    router.push(`/post/${data.id}`)
+    // 发布成功后跳回首页，用 replace 避免回退到发布页
+    router.replace('/')
   } catch (e) {
     errorMsg.value = e?.response?.data?.message || e?.message || '发布失败，请稍后再试'
   } finally { submitting.value = false }

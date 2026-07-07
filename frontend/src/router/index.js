@@ -26,6 +26,12 @@ const routes = [
     meta: { title: '搜索' }
   },
   {
+    path: '/feedback',
+    name: 'Feedback',
+    component: () => import('@/views/FeedbackView.vue'),
+    meta: { title: '意见反馈' }
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/NotFoundView.vue'),
