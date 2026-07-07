@@ -65,9 +65,9 @@ CREATE TABLE IF NOT EXISTS admins (
     created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 初始化默认管理员 (密码: admin123)
+-- 初始化默认管理员 (密码: Wanshan@2026!#，首次登录后请立即修改)
 INSERT IGNORE INTO admins (username, password, role)
-VALUES ('admin', '$2b$12$QyfQBEXkUwYPJHHCPVJCOuNVlXerVUrrSbuhKklP1L/R36Xd6DtTe', 'admin');
+VALUES ('admin', '$2b$12$Ng4SxzVT.vkMZJdgwOyChemxCItxNKCRdTQa1bLlj65NAi5EOoNR6', 'admin');
 
 -- 敏感词表
 CREATE TABLE IF NOT EXISTS sensitive_words (

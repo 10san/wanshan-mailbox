@@ -27,14 +27,14 @@ services:
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=wanshan_mailbox
       - MYSQL_USERNAME=root
-      - MYSQL_PASSWORD=wanshan2024
+      - MYSQL_PASSWORD=szKZsJ47hPGNl5l
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - MINIO_ENDPOINT=http://minio:9000
       - MINIO_ACCESS_KEY=minioadmin
-      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_SECRET_KEY=iwQM8foyH9xhQ7sW
       - MINIO_BUCKET=wanshan-images
-      - JWT_SECRET=change-this-to-a-random-string-in-production
+      - JWT_SECRET=jiUEvuwj+/xYzf3Hx7OCBCeJrCYLh/gn6zLd7JhvutoQDSsvvpvgS5OFKxpfd5KK
     depends_on:
       mysql:
         condition: service_healthy
@@ -47,7 +47,7 @@ services:
     image: mysql:8.0
     container_name: wanshan-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: wanshan2024
+      MYSQL_ROOT_PASSWORD: szKZsJ47hPGNl5l
       MYSQL_DATABASE: wanshan_mailbox
       MYSQL_CHARSET: utf8mb4
       MYSQL_COLLATION: utf8mb4_unicode_ci
@@ -80,7 +80,7 @@ services:
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_PASSWORD: iwQM8foyH9xhQ7sW
     ports:
       - "9000:9000"
       - "9001:9001"
