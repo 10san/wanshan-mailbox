@@ -11,6 +11,7 @@ const routes = [
       { path: 'reports', name: 'Reports', component: () => import('@/views/ReportManageView.vue') },
       { path: 'sensitive-words', name: 'SensitiveWords', component: () => import('@/views/SensitiveWordView.vue') },
       { path: 'ip-blocks', name: 'IpBlocks', component: () => import('@/views/IpBlockView.vue') },
+      { path: 'feedbacks', name: 'Feedbacks', component: () => import('@/views/FeedbackManageView.vue') },
     ]
   }
 ]
