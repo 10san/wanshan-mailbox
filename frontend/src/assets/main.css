@@ -95,3 +95,118 @@
 .dark .btn-primary {
   background-color: #E0680A;
 }
+
+/* ====== Hero 引导区 ====== */
+.hero-section {
+  background: linear-gradient(180deg, #FFF8F0 0%, #FFE8D0 40%, #FFF8F0 100%);
+  border-bottom: 1px solid #FFD4A8;
+}
+
+.dark .hero-section {
+  background: linear-gradient(180deg, #1a1410 0%, #2a2218 40%, #1a1410 100%);
+  border-bottom-color: #3D2D1B;
+}
+
+/* Hero 背景装饰圆 */
+.hero-bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.08;
+  background: #FF7F1A;
+}
+.dark .hero-bg-circle {
+  opacity: 0.06;
+  background: #FF9E40;
+}
+.hero-bg-circle-1 {
+  width: 200px; height: 200px;
+  top: -60px; right: -40px;
+}
+.hero-bg-circle-2 {
+  width: 120px; height: 120px;
+  bottom: 20px; left: 5%;
+}
+.hero-bg-circle-3 {
+  width: 80px; height: 80px;
+  top: 40px; left: 15%;
+}
+
+/* Hero CTA 按钮 */
+.hero-cta {
+  background: linear-gradient(135deg, #FF7F1A, #FF9E40);
+  color: #fff;
+  padding: 12px 32px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 16px rgba(255, 127, 26, 0.35);
+  transition: all 0.3s ease;
+}
+.hero-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(255, 127, 26, 0.45);
+}
+.hero-cta:active {
+  transform: scale(0.96);
+}
+
+.dark .hero-cta {
+  background: linear-gradient(135deg, #E0680A, #FF7F1A);
+  box-shadow: 0 4px 16px rgba(224, 104, 10, 0.35);
+}
+
+/* Hero 内容动画 */
+.hero-content-anim {
+  animation: heroContentIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.hero-icon-anim {
+  animation: heroIconFloat 3s ease-in-out infinite;
+}
+
+@keyframes heroContentIn {
+  0% { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heroIconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Hero 过渡动画 */
+.hero-fade-enter-active {
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hero-fade-leave-active {
+  transition: all 0.3s ease-in;
+}
+.hero-fade-enter-from {
+  opacity: 0;
+  max-height: 0;
+  transform: translateY(-10px);
+}
+.hero-fade-enter-to {
+  opacity: 1;
+  max-height: 400px;
+  transform: translateY(0);
+}
+.hero-fade-leave-from {
+  opacity: 1;
+  max-height: 400px;
+}
+.hero-fade-leave-to {
+  opacity: 0;
+  max-height: 0;
+  transform: translateY(-10px);
+}
+
+/* 紧凑引导条 */
+.compact-hero-bar {
+  background: linear-gradient(90deg, #FFF8F0, #FFE8D0, #FFF8F0);
+  border-bottom: 1px solid #FFD4A8;
+}
+.dark .compact-hero-bar {
+  background: linear-gradient(90deg, #1a1410, #2a2218, #1a1410);
+  border-bottom-color: #3D2D1B;
+}
