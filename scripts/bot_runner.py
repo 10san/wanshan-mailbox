@@ -390,7 +390,7 @@ class WanshanBot:
 
     def create_post(self, content, tag):
         """发帖"""
-        data = {"content": content, "tag": tag}
+        data = {"content": content, "tag": tag, "isBot": "1"}
         result = self._post("/api/v1/posts", data)
         if result and result.get("code") == 200:
             post_id = result["data"]["id"]
@@ -404,7 +404,7 @@ class WanshanBot:
 
     def create_comment(self, post_id, content):
         """评论"""
-        data = {"content": content}
+        data = {"content": content, "isBot": "1"}
         result = self._post(f"/api/v1/posts/{post_id}/comments", data)
         if result and result.get("code") == 200:
             self.stats["comments"] += 1

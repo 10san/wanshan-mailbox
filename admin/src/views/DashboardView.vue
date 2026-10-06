@@ -1,13 +1,33 @@
 <template>
   <div>
     <h2 class="text-xl font-bold text-gray-800 mb-6">数据看板</h2>
-    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+
+    <!-- 全部统计 -->
+    <h3 class="text-sm font-medium text-gray-500 mb-3">📊 全部数据</h3>
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
       <div class="bg-white rounded-xl p-5 shadow-sm"><p class="text-sm text-gray-500">今日发帖</p><p class="text-3xl font-bold text-blue-500 mt-1">{{ stats.todayPosts }}</p></div>
       <div class="bg-white rounded-xl p-5 shadow-sm"><p class="text-sm text-gray-500">今日评论</p><p class="text-3xl font-bold text-green-500 mt-1">{{ stats.todayComments }}</p></div>
       <div class="bg-white rounded-xl p-5 shadow-sm"><p class="text-sm text-gray-500">累计帖子</p><p class="text-3xl font-bold text-purple-500 mt-1">{{ stats.totalPosts }}</p></div>
       <div class="bg-white rounded-xl p-5 shadow-sm"><p class="text-sm text-gray-500">累计浏览</p><p class="text-3xl font-bold text-indigo-500 mt-1">{{ stats.totalViews }}</p></div>
       <div class="bg-white rounded-xl p-5 shadow-sm"><p class="text-sm text-gray-500">待处理举报</p><p class="text-3xl font-bold text-red-500 mt-1">{{ stats.pendingReports }}</p></div>
     </div>
+
+    <!-- 真实用户 -->
+    <h3 class="text-sm font-medium text-gray-500 mb-3">👤 真实用户</h3>
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <div class="bg-green-50 rounded-xl p-5 border border-green-100"><p class="text-sm text-green-600">今日发帖</p><p class="text-3xl font-bold text-green-500 mt-1">{{ stats.todayRealPosts || 0 }}</p></div>
+      <div class="bg-green-50 rounded-xl p-5 border border-green-100"><p class="text-sm text-green-600">今日评论</p><p class="text-3xl font-bold text-green-500 mt-1">{{ stats.todayRealComments || 0 }}</p></div>
+      <div class="bg-green-50 rounded-xl p-5 border border-green-100"><p class="text-sm text-green-600">累计帖子</p><p class="text-3xl font-bold text-green-500 mt-1">{{ stats.totalRealPosts || 0 }}</p></div>
+    </div>
+
+    <!-- 机器人 -->
+    <h3 class="text-sm font-medium text-gray-500 mb-3">🤖 机器人</h3>
+    <div class="grid grid-cols-3 gap-4 mb-8">
+      <div class="bg-gray-50 rounded-xl p-5 border border-gray-200"><p class="text-sm text-gray-500">今日发帖</p><p class="text-3xl font-bold text-gray-400 mt-1">{{ stats.todayBotPosts || 0 }}</p></div>
+      <div class="bg-gray-50 rounded-xl p-5 border border-gray-200"><p class="text-sm text-gray-500">今日评论</p><p class="text-3xl font-bold text-gray-400 mt-1">{{ stats.todayBotComments || 0 }}</p></div>
+      <div class="bg-gray-50 rounded-xl p-5 border border-gray-200"><p class="text-sm text-gray-500">累计帖子</p><p class="text-3xl font-bold text-gray-400 mt-1">{{ stats.totalBotPosts || 0 }}</p></div>
+    </div>
+
     <div class="bg-white rounded-xl p-6 shadow-sm">
       <h3 class="text-sm font-medium text-gray-600 mb-4">近 7 天趋势</h3>
       <div ref="chartEl" style="height: 260px"></div>
@@ -44,12 +64,13 @@ const renderChart = () => {
   const w = canvas.width, h = canvas.height
 
   // 使用真实趋势数据，没有则回退到模拟数据
-  let days, posts, comments
+  let days, posts, comments, realPosts
   const trend = stats.value.trend || []
   if (trend.length > 0) {
     days = trend.map(t => t.label)
     posts = trend.map(t => t.posts)
     comments = trend.map(t => t.comments)
+    realPosts = trend.map(t => t.realPosts || 0)
   } else {
     const now = new Date()
     days = Array.from({length: 7}, (_, i) => {
@@ -58,6 +79,7 @@ const renderChart = () => {
     })
     posts = [3,5,2,8,6,4,7]
     comments = [8,12,6,18,14,9,16]
+    realPosts = [0,0,0,0,0,0,0]
   }
 
   const maxVal = Math.max(...posts, ...comments, 1)
@@ -87,15 +109,19 @@ const renderChart = () => {
     })
   }
   drawLine(posts, '#3B82F6')
+  drawLine(realPosts, '#8B5CF6')
   drawLine(comments, '#10B981')
 
   ctx.fillStyle = '#999'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center'
   days.forEach((d, i) => ctx.fillText(d, pad.left + (cw/(days.length-1))*i, h - 10))
 
-  ctx.fillStyle = '#3B82F6'; ctx.fillRect(w - 180, 10, 12, 12)
+  // 图例
+  ctx.fillStyle = '#3B82F6'; ctx.fillRect(w - 260, 10, 12, 12)
   ctx.fillStyle = '#333'; ctx.font = '12px sans-serif'; ctx.textAlign = 'left'
-  ctx.fillText('发帖', w - 164, 21)
-  ctx.fillStyle = '#10B981'; ctx.fillRect(w - 100, 10, 12, 12)
-  ctx.fillText('评论', w - 84, 21)
+  ctx.fillText('总发帖', w - 244, 21)
+  ctx.fillStyle = '#8B5CF6'; ctx.fillRect(w - 180, 10, 12, 12)
+  ctx.fillText('真实用户', w - 164, 21)
+  ctx.fillStyle = '#10B981'; ctx.fillRect(w - 80, 10, 12, 12)
+  ctx.fillText('总评论', w - 64, 21)
 }
 </script>

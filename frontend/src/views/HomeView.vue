@@ -128,6 +128,11 @@
     <router-link to="/new" class="fixed bottom-6 right-6 w-14 h-14 bg-warm-500 text-white rounded-full shadow-lg flex items-center justify-center text-2xl hover:bg-warm-600 active:scale-95 transition-all z-20 no-underline">
       ✏️
     </router-link>
+
+    <footer class="py-6 text-center text-xs text-dusk-400 pb-24">
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer"
+         class="hover:text-dusk-500 transition-colors">蜀ICP备2026041035号-1</a>
+    </footer>
   </div>
 </template>
 
