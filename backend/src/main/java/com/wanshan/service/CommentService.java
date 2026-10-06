@@ -26,7 +26,7 @@ public class CommentService {
     private final AnonymousIdService anonymousIdService;
 
     @Transactional
-    public Comment createComment(Long postId, String content, HttpServletRequest request) {
+    public Comment createComment(Long postId, String content, int isBot, HttpServletRequest request) {
         if (sensitiveWordFilter.containsSensitive(content)) {
             throw new IllegalArgumentException("内容包含不当信息，请修改后重新发布");
         }
@@ -46,6 +46,7 @@ public class CommentService {
                 .cookieId(cookieId)
                 .status(1)
                 .likeCount(0)
+                .isBot(isBot)
                 .build();
 
         commentMapper.insert(comment);

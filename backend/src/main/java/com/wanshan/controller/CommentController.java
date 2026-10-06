@@ -41,7 +41,12 @@ public class CommentController {
                 return Result.error("评论内容超出字数限制（500字）");
             }
 
-            Comment comment = commentService.createComment(postId, content.trim(), request);
+            Comment comment = commentService.createComment(
+                    postId,
+                    content.trim(),
+                    body.get("isBot") != null ? Integer.parseInt(body.get("isBot")) : 0,
+                    request
+            );
             return Result.success(comment);
         } catch (IllegalArgumentException e) {
             return Result.error(e.getMessage());

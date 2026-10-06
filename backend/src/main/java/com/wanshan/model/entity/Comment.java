@@ -33,4 +33,7 @@ public class Comment {
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
+
+    /** 0:真实用户 1:机器人 */
+    private Integer isBot;
 }

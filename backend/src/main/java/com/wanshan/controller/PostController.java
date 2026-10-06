@@ -63,6 +63,7 @@ public class PostController {
                     body.get("tag"),
                     body.get("deletePassword"),
                     body.get("imageUrl"),
+                    body.get("isBot") != null ? Integer.parseInt(body.get("isBot")) : 0,
                     request
             );
             return Result.success(post);

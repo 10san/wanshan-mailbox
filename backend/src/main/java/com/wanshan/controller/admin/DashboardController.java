@@ -33,6 +33,7 @@ public class DashboardController {
         LocalDateTime todayStart = LocalDate.now(zone).atStartOfDay();
         LocalDateTime tomorrowStart = todayStart.plusDays(1);
 
+        // --- 今日统计（全部） ---
         long todayPosts = postMapper.selectCount(
                 new LambdaQueryWrapper<Post>()
                         .ge(Post::getCreatedAt, todayStart)
@@ -50,6 +51,34 @@ public class DashboardController {
         Long totalViews = jdbcTemplate.queryForObject(
                 "SELECT COALESCE(SUM(view_count), 0) FROM posts", Long.class);
 
+        // --- 真实用户统计 ---
+        long todayRealPosts = postMapper.selectCount(
+                new LambdaQueryWrapper<Post>()
+                        .ge(Post::getCreatedAt, todayStart)
+                        .lt(Post::getCreatedAt, tomorrowStart)
+                        .eq(Post::getIsBot, 0));
+        long todayRealComments = commentMapper.selectCount(
+                new LambdaQueryWrapper<Comment>()
+                        .ge(Comment::getCreatedAt, todayStart)
+                        .lt(Comment::getCreatedAt, tomorrowStart)
+                        .eq(Comment::getIsBot, 0));
+        long totalRealPosts = postMapper.selectCount(
+                new LambdaQueryWrapper<Post>().eq(Post::getIsBot, 0));
+
+        // --- 机器人统计 ---
+        long todayBotPosts = postMapper.selectCount(
+                new LambdaQueryWrapper<Post>()
+                        .ge(Post::getCreatedAt, todayStart)
+                        .lt(Post::getCreatedAt, tomorrowStart)
+                        .eq(Post::getIsBot, 1));
+        long todayBotComments = commentMapper.selectCount(
+                new LambdaQueryWrapper<Comment>()
+                        .ge(Comment::getCreatedAt, todayStart)
+                        .lt(Comment::getCreatedAt, tomorrowStart)
+                        .eq(Comment::getIsBot, 1));
+        long totalBotPosts = postMapper.selectCount(
+                new LambdaQueryWrapper<Post>().eq(Post::getIsBot, 1));
+
         // 近7天趋势（真实数据）
         List<Map<String, Object>> trend = new ArrayList<>();
         for (int i = 6; i >= 0; i--) {
@@ -65,22 +94,34 @@ public class DashboardController {
                     new LambdaQueryWrapper<Comment>()
                             .ge(Comment::getCreatedAt, dayStart)
                             .lt(Comment::getCreatedAt, dayEnd));
+            long dayRealPosts = postMapper.selectCount(
+                    new LambdaQueryWrapper<Post>()
+                            .ge(Post::getCreatedAt, dayStart)
+                            .lt(Post::getCreatedAt, dayEnd)
+                            .eq(Post::getIsBot, 0));
 
             Map<String, Object> day = new LinkedHashMap<>();
             day.put("date", date.toString());
             day.put("label", (date.getMonthValue()) + "/" + date.getDayOfMonth());
             day.put("posts", dayPosts);
             day.put("comments", dayComments);
+            day.put("realPosts", dayRealPosts);
             trend.add(day);
         }
 
-        return Result.success(Map.of(
-                "todayPosts", todayPosts,
-                "todayComments", todayComments,
-                "totalPosts", totalPosts,
-                "pendingReports", pendingReports,
-                "totalViews", totalViews != null ? totalViews : 0L,
-                "trend", trend
-        ));
+        Map<String, Object> result = new HashMap<>();
+        result.put("todayPosts", todayPosts);
+        result.put("todayComments", todayComments);
+        result.put("totalPosts", totalPosts);
+        result.put("pendingReports", pendingReports);
+        result.put("totalViews", totalViews != null ? totalViews : 0L);
+        result.put("todayRealPosts", todayRealPosts);
+        result.put("todayRealComments", todayRealComments);
+        result.put("totalRealPosts", totalRealPosts);
+        result.put("todayBotPosts", todayBotPosts);
+        result.put("todayBotComments", todayBotComments);
+        result.put("totalBotPosts", totalBotPosts);
+        result.put("trend", trend);
+        return Result.success(result);
     }
 }

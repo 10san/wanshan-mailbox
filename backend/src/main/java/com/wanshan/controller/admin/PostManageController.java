@@ -27,11 +27,15 @@ public class PostManageController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) Integer isBot,
             @RequestParam(required = false) String keyword) {
 
         LambdaQueryWrapper<Post> wrapper = new LambdaQueryWrapper<>();
         if (status != null) {
             wrapper.eq(Post::getStatus, status);
+        }
+        if (isBot != null) {
+            wrapper.eq(Post::getIsBot, isBot);
         }
         if (keyword != null && !keyword.isEmpty()) {
             wrapper.like(Post::getContent, keyword);

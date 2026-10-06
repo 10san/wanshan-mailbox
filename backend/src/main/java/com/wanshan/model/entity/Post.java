@@ -51,4 +51,7 @@ public class Post {
 
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
+
+    /** 0:真实用户 1:机器人 */
+    private Integer isBot;
 }
